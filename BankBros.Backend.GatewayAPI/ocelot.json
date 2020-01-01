@@ -1,0 +1,95 @@
+{
+  "ReRoutes": [
+    {
+      "UpstreamPathTemplate": "/banking/{catchAll}",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Put",
+        "Delete"
+      ],
+      "DownstreamPathTemplate": "/{catchAll}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "https://bankbroscore.azurewebsites.net/",
+          "Port": 443
+        }
+      ],
+      "DelegatingHandlers": [
+        "ReplaceHandler"
+      ],
+      "Key": "BNK"
+    },
+    {
+      "UpstreamPathTemplate": "/billing/api/{catchAll}",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Put",
+        "Delete"
+      ],
+      "DownstreamPathTemplate": "/api/{catchAll}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "https://bankbrosbilling.azurewebsites.net/",
+          "Port": 443
+        }
+      ],
+      "DelegatingHandlers": [
+        "ReplaceHandler"
+      ],
+      "Key": "BIL"
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "https://bankbrosapi.azurewebsites.net",
+    "RequestIdKey": "OcRequestId",
+    "AdministrationPath": "/administration"
+  },
+  "RouteExtensions": {
+    "ReplaceHandler": {
+      "Settings": 1,
+      "Rules": [
+        {
+          "AppliesTo": [ "BNK", "BIL" ],
+          "ReplaceDownstreamHeaders": [
+            {
+              "Header": "User-Agent",
+              "Find": "Mozilla",
+              "Replace": "private"
+            },
+            {
+              "Header": "User-Agent",
+              "Find": "AppleWebKit",
+              "Replace": "private"
+            },
+            {
+              "Header": "User-Agent",
+              "Find": "Chrome",
+              "Replace": "private"
+            },
+            {
+              "Header": "User-Agent",
+              "Find": "Safari",
+              "Replace": "private"
+            }
+          ],
+          "ReplaceDownstreamContent": [
+            {
+              "Find": "NothingToFind",
+              "Replace": "NothingToReplace"
+            }
+          ],
+          "ReplaceUpstreamContent": [
+            {
+              "Find": "<link>http:",
+              "Replace": "<link>https:"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
